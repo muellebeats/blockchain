@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Firmar Mensaje en el Navegador</title>
+  <!-- Carga la librería elliptic (local o CDN). 
+       Aquí uso la CDN, pero puedes alojarla en tu carpeta static/js/ 
+       si no tienes conexión a Internet. -->
+  <script src="{{ url_for('static', filename='js/elliptic.min.js') }}"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    textarea {
+      width: 100%;
+      max-width: 500px;
+      height: 60px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Firmar Mensaje (ECDSA secp256k1)</h1>
+  <p>Introduce tu clave privada, tu User ID y el mensaje exacto que quieres firmar. 
+     Al hacer clic, se generará la firma en el navegador.</p>
+
+  <!-- Campo para la clave privada -->
+  <label>Clave Privada (Hex):</label><br>
+  <textarea id="privateKey"></textarea><br><br>
+
+  <!-- Campo para el User ID -->
+  <label>User ID:</label><br>
+  <textarea id="userID"></textarea><br><br>
+
+  <!-- Campo para el mensaje a firmar -->
+  <label>Mensaje a Firmar:</label><br>
+  <textarea id="message"></textarea><br><br>
+
+  <button onclick="signMessage()">Firmar Mensaje</button>
+
+  <h3>Firma (Hex):</h3>
+  <textarea id="signature" readonly></textarea>
+
+  <script>
+    function signMessage() {
+      // Verifica si elliptic está cargado
+      if (!window.elliptic || !window.elliptic.ec) {
+        alert("No se pudo cargar la librería elliptic. Revisa tu conexión o usa un archivo local.");
+        return;
+      }
+      const EC = window.elliptic.ec;
+      const ec = new EC('secp256k1');
+
+      // Obtén la clave privada, el User ID y el mensaje desde el HTML
+      const privateKeyHex = document.getElementById('privateKey').value.trim();
+      const userID = document.getElementById('userID').value.trim();
+      const msg = document.getElementById('message').value;
+
+      if (!privateKeyHex || !userID || !msg) {
+        alert("Por favor, completa la clave privada, el User ID y el mensaje.");
+        return;
+      }
+
+      try {
+        // Crea la instancia de la clave privada
+        const key = ec.keyFromPrivate(privateKeyHex, 'hex');
+
+        // Concatenamos userID y msg para que ambos formen parte de lo firmado
+        const combinedMessage = "UserID: " + userID + "\nMensaje: " + msg;
+
+        // Firma el mensaje combinado
+        const signature = key.sign(combinedMessage);
+
+        // Convertimos la firma a formato DER en hex
+        const signatureHex = signature.toDER('hex');
+
+        // Mostramos la firma
+        document.getElementById('signature').value = signatureHex;
+        console.log("Firma generada:", signatureHex);
+      } catch (err) {
+        console.error("Error al firmar:", err);
+        alert("Error al firmar. Verifica que la clave privada sea válida en hex.");
+      }
+    }
+  </script>
+</body>
+</html>
+

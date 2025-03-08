@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registrar Clave Pública</title>
+</head>
+<body>
+    <h1>Registrar Clave Pública</h1>
+    <form action="/register" method="POST">
+        <!-- Campo para el User ID -->
+        <label for="user_id">User ID:</label>
+        <input type="text" name="user_id" id="user_id" required>
+        <br><br>
+
+        <!-- Campo para la clave pública -->
+        <label for="public_key">Clave Pública (Hex):</label>
+        <input type="text" name="public_key" id="public_key" required>
+        <br><br>
+
+        <button type="submit">Registrar</button>
+    </form>
+</body>
+</html>

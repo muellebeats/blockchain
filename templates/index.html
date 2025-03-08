@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Página Principal</title>
+</head>
+<body>
+  <h1>Bienvenido a la Aplicación</h1>
+
+  <!-- Otros enlaces o menús que necesites -->
+  <ul>
+    <li><a href="{{ url_for('getchain') }}">Ver Blockchain</a></li>
+    <li><a href="{{ url_for('form_register') }}">Registrar Clave Pública</a></li>
+    <li><a href="{{ url_for('form_send_message') }}">Enviar Mensaje Firmado</a></li>
+<li><a href="{{ url_for('genz') }}">Generar Claves</a></li>  
+    <!-- Agrega más enlaces si quieres -->
+  </ul>
+
+  <hr>
+
+  <!-- Botón para ir a la página de firmar mensaje (sign.html) -->
+  <button onclick="window.location.href='{{ url_for('sign') }}'">
+    Firmar Mensaje (ECDSA secp256k1)
+  </button>
+</body>
+</html>

@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadena de Mensajes</title>
+</head>
+<body>
+  <h1>Cadena de Mensajes</h1>
+  <ul>
+    {% for block in chain %}
+    <li>
+      <strong>Bloque #{{ block['index'] }}</strong><br/>
+      Usuario: {{ block['user_id'] }}<br/>
+      Contenido: {{ block['content'] }}<br/>
+      Tipo: {{ block['block_type'] }}<br/>
+      <!-- Aquí usamos el campo con la fecha formateada -->
+      Fecha/Hora: {{ block['readable_timestamp'] }}<br/>
+      Hash: {{ block['hash'] }}<br/>
+      Hash previo: {{ block['previous_hash'] }}<br/>
+    </li>
+    <hr/>
+    {% endfor %}
+  </ul>
+  <a href="/">Volver</a>
+</body>
+</html>

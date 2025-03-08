@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Claves ECDSA (secp256k1)</title>
+  <!-- Carga la librería elliptic (local o CDN) -->
+    <script src="{{ url_for('static', filename='js/elliptic.min.js') }}"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    button {
+      padding: 8px 16px;
+      margin-right: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%;
+      max-width: 500px;
+      height: 60px;
+    }
+    h1, p {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generador de Claves ECDSA (secp256k1)</h1>
+  <p>
+    Haz clic en el botón para generar tu par de claves. 
+    La clave privada se genera <strong>localmente</strong> en tu navegador 
+    y nunca se envía al servidor. 
+    <strong>Guárdala</strong> en un lugar seguro.
+  </p>
+  
+  <!-- Botón para generar claves -->
+  <button id="generateBtn" onclick="generateKeys()">Generar Claves</button>
+  <!-- Botón para descargar la clave privada -->
+  <button id="downloadBtn" onclick="downloadPrivateKey()" disabled>Descargar Clave Privada</button>
+  
+  <h3>Clave Privada (Hex):</h3>
+  <textarea id="privateKey" readonly></textarea>
+  
+  <h3>Clave Pública (Hex):</h3>
+  <textarea id="publicKey" readonly></textarea>
+  
+  <script>
+    // Variable global para almacenar la clave privada generada
+    let generatedPrivateKey = null;
+
+    function generateKeys() {
+      console.log("Intentando generar claves...");
+
+      if (!window.elliptic || !window.elliptic.ec) {
+        alert("No se pudo cargar la librería elliptic. Revisa la consola o tu conexión.");
+        return;
+      }
+
+      // Instancia la clase ec para la curva secp256k1
+      const EC = window.elliptic.ec;
+      const ec = new EC('secp256k1');
+
+      // Genera un nuevo par de claves
+      const keyPair = ec.genKeyPair();
+
+      // Obtén la clave privada en formato hex
+      const privateKeyHex = keyPair.getPrivate('hex');
+      // Obtén la clave pública en formato hex (no comprimida)
+      const publicKeyHex = keyPair.getPublic(false, 'hex');
+
+      // Muestra las claves en los textareas
+      document.getElementById('privateKey').value = privateKeyHex;
+      document.getElementById('publicKey').value = publicKeyHex;
+
+      // Guarda la clave privada en la variable global
+      generatedPrivateKey = privateKeyHex;
+
+      // Deshabilita el botón de generar para evitar regenerar múltiples veces
+      document.getElementById('generateBtn').disabled = true;
+
+      // Habilita el botón de descargar
+      document.getElementById('downloadBtn').disabled = false;
+
+      console.log("Claves generadas correctamente.");
+    }
+
+    function downloadPrivateKey() {
+      if (!generatedPrivateKey) {
+        alert("No se ha generado una clave privada.");
+        return;
+      }
+      // Crea un blob de texto con la clave privada
+      const blob = new Blob([generatedPrivateKey], { type: 'text/plain' });
+      
+      // Crea un enlace temporal para descargar
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      // Nombre del archivo
+      link.download = 'private_key.txt';
+      
+      // Dispara la descarga y limpia el objeto URL
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+      // Opcional: Deshabilitar el botón de descarga si quieres que solo se descargue una vez
+      // document.getElementById('downloadBtn').disabled = true;
+    }
+  </script>
+</body>
+</html>
+
